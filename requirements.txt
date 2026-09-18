@@ -1,0 +1,9 @@
+streamlit>=1.40
+openai>=1.50
+python-dotenv>=1.0
+bcrypt>=4.1
+psycopg[binary]>=3.2
+pandas>=2.2
+google-api-python-client>=2.140
+google-auth>=2.34
+google-auth-oauthlib>=1.2
