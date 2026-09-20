@@ -4,7 +4,12 @@ AIを活用して問い合わせ内容を分析・構造化し、対応期限・
 
 Python / Streamlit / PostgreSQL / Docker / OpenAI APIを使用して、問い合わせ受付からAI分析、対応管理、顧客管理、分析までの一連の業務フローを実装しています。
 
-> **Portfolio / Demo Project**  
+> **Portfolio / Demo Project**
+
+## 🌐 Live Demo
+
+https://ai-customer-support-hub-production.up.railway.app/
+  
 > 本リポジトリはポートフォリオ・デモ用途として作成しています。
 
 ---
