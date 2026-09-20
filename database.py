@@ -90,10 +90,10 @@ def get_audits(company_id,limit=500):
         out=[]
         for r in rows:
             d = dict(r)
-　　　　　　　d["timestamp"] = d["timestamp"].astimezone(ZoneInfo("Asia/Tokyo")).isoformat(timespec="seconds")
-　　　　　　　out.append(d)
+            d["timestamp"] = d["timestamp"].astimezone(ZoneInfo("Asia/Tokyo")).isoformat(timespec="seconds")
+            out.append(d)
 
-　　　　　　　return out
+        return out
 # v5.1: tenant-scoped data access. Application code should prefer these functions.
 def list_users_by_company(company_id):
     with conn() as c:
