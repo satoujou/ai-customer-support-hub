@@ -1,117 +1,96 @@
-                    details = x.get("details") or {}
-                    display_rows.append({
-                        "日時": x.get("timestamp", ""),
-                        "ユーザー": x.get("user", ""),
-                        "権限": x.get("role", ""),
-                        "操作": x.get("action", ""),
-                        "対象": x.get("target", ""),
-                        "詳細": json.dumps(details, ensure_ascii=False, default=str),
-                    })
-                st.dataframe(display_rows, use_container_width=True, hide_index=True)
+```
+import os
+import io
+import csv
+import json
+import bcrypt
+from pathlib import Path
+from database import (init_db, get_user, list_users, list_users_by_company, upsert_user, update_user_db, list_companies, ensure_company, update_company_db, add_audit, get_audits, company_usage_stats)
+from datetime import datetime, date, timedelta
+from zoneinfo import ZoneInfo
 
-                output = io.StringIO()
-                writer = csv.DictWriter(
-                    output,
-                    fieldnames=["日時", "ユーザー", "権限", "操作", "対象", "詳細"],
-                )
-                writer.writeheader()
-                writer.writerows(display_rows)
-                st.download_button(
-                    "監査ログをCSV出力",
-                    data=output.getvalue().encode("utf-8-sig"),
-                    file_name=f"audit_log_{today_jst().strftime('%Y%m%d')}.csv",
-                    mime="text/csv",
-                    use_container_width=True,
-                )
-            else:
-                st.caption("監査ログはまだありません。")
+import streamlit as st
+from openai import OpenAI
+from dotenv import load_dotenv
 
-        st.write("### 🧩 システム情報")
-        i1, i2, i3 = st.columns(3)
-        i1.metric("バージョン", APP_VERSION)
-        i2.metric("データストア", "PostgreSQL")
-        i3.metric("AI", "OpenAI")
-        st.caption(f"企業分離基盤：{CURRENT_COMPANY_ID}（v3.3.1：問い合わせ・顧客・分析・担当者・ユーザー・監査ログを企業単位で分離）")
-    
-        st.write("### 🛡 運用上の注意")
-        st.info(
-            "AI返信案は自動送信せず、人が確認・編集してから利用する設計です。"
-            "v3.0では認証・基本権限管理を実装済みです。本番公開時は監査ログ・"
-            "秘密情報は環境変数で管理し、PostgreSQLを永続データストアとして使用します。"
-        )
+from main import (
+    analyze_inquiry,
+    save_to_google_sheets,
+    get_inquiry_history,
+    update_inquiry_status,
+    get_urgent_inquiries,
+    connection_check,
+)
 
+from auth import (
+    initialize_auth,
+    login_screen,
+    logout,
+    is_authenticated,
+    current_user,
+    current_role,
+    can,
+)
 
-with tab7:
-    if is_platform_admin():
-        st.subheader("企業管理（プラットフォーム管理者）")
-        st.caption("契約企業の作成・利用状況確認を行います。各企業の問い合わせ本文はこの画面には表示しません。")
-        try:
-            st.dataframe(company_usage_rows(), use_container_width=True, hide_index=True)
-        except Exception as e:
-            st.error(f"企業利用状況を取得できませんでした: {e}")
-        with st.expander("➕ 新しい企業を作成"):
-            with st.form("create_company_form"):
-                c1,c2=st.columns(2)
-                with c1:
-                    cid=st.text_input("企業ID", placeholder="company_003")
-                    cname=st.text_input("企業名", placeholder="株式会社サンプル")
-                with c2:
-                    auser=st.text_input("初期管理者ユーザーID", placeholder="admin_sample")
-                    apass=st.text_input("初期パスワード（10文字以上）", type="password")
-                apass2=st.text_input("初期パスワード（確認）", type="password")
-                submitted=st.form_submit_button("企業と初期管理者を作成", use_container_width=True)
-            if submitted:
-                if apass != apass2:
-                    st.error("確認用パスワードが一致しません。")
-                else:
-                    ok,msg=create_company(cid,cname,auser,apass)
-                    if ok:
-                        write_audit_log('CREATE_COMPANY',target=cid,details={'company_name':cname,'admin':auser})
-                        st.success(msg); st.rerun()
-                    else: st.error(msg)
+load_dotenv()
 
-        companies_for_edit = load_companies()
-        if companies_for_edit:
-            with st.expander("✏️ 企業情報を変更・停止／再開"):
-                selected_cid = st.selectbox(
-                    "対象企業",
-                    [c.get("company_id", "") for c in companies_for_edit],
-                    key="platform_company_select",
-                )
-                selected_company = next(
-                    c for c in companies_for_edit if c.get("company_id") == selected_cid
-                )
-                edited_name = st.text_input(
-                    "企業名",
-                    value=selected_company.get("company_name", selected_cid),
-                    key="platform_company_name",
-                )
-                edited_active = st.checkbox(
-                    "有効",
-                    value=bool(selected_company.get("active", True)),
-                    key="platform_company_active",
-                )
-                if st.button("企業情報を保存", use_container_width=True, key="platform_company_save"):
-                    if selected_cid == CURRENT_COMPANY_ID and not edited_active:
-                        st.error("現在ログイン中のプラットフォーム管理企業は停止できません。")
-                    else:
-                        before_name = selected_company.get("company_name", selected_cid)
-                        before_active = bool(selected_company.get("active", True))
-                        ok, msg = update_company(selected_cid, edited_name, edited_active)
-                        if ok:
-                            write_audit_log(
-                                "UPDATE_COMPANY",
-                                target=selected_cid,
-                                details={
-                                    "company_name": {"before": before_name, "after": edited_name},
-                                    "active": {"before": before_active, "after": edited_active},
-                                },
-                            )
-                            st.success(msg)
-                            st.rerun()
-                        else:
-                            st.error(msg)
+# v3.2.1: auth.py と同じ権限名を app.py 側でも使用する
+ROLE_ADMIN = "管理者"
+ROLE_AGENT = "担当者"
+ROLE_VIEWER = "閲覧者"
 
-# Global operational footer
-st.divider()
-st.caption(f"AI Customer Support Hub v{APP_VERSION} ｜ tenant={CURRENT_COMPANY_ID} ｜ user={CURRENT_USER}")
+ASSIGNEES = [
+    x.strip() for x in os.getenv("INQUIRY_ASSIGNEES", "佐藤,田中,鈴木").split(",")
+    if x.strip()
+]
+CURRENT_USER = os.getenv(
+    "INQUIRY_CURRENT_USER",
+    ASSIGNEES[0] if ASSIGNEES else "佐藤"
+)
+COMPANY_NAME = os.getenv("COMPANY_NAME", "Demo Company")
+DEFAULT_COMPANY_ID = os.getenv("COMPANY_ID", "company_001").strip() or "company_001"
+APP_VERSION = "Portfolio Final 1.0"
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-5.6-luna")
+JST = ZoneInfo("Asia/Tokyo")
+def now_jst(): return datetime.now(JST)
+def today_jst(): return now_jst().date()
+
+def _reply_client():
+    key = (os.getenv("OPENAI_API_KEY") or "").strip()
+    if not key or key == "replace_me":
+        raise RuntimeError("OPENAI_API_KEY が設定されていません。")
+    return OpenAI(api_key=key)
+
+st.set_page_config(
+    page_title="AI問い合わせ管理",
+    page_icon="🤖",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+)
+
+# v5.0: authentication is PostgreSQL-backed
+initialize_auth()
+
+if not is_authenticated():
+    login_screen()
+    st.stop()
+
+# 認証済みユーザーをアプリ全体の現在ユーザーとして使用
+CURRENT_USER = current_user() or "未設定"
+CURRENT_ROLE = current_role() or "未設定"
+# CURRENT_COMPANY_ID は load_managed_users() 定義後に確定する
+CURRENT_COMPANY_ID = DEFAULT_COMPANY_ID
+
+st.markdown("""
+<style>
+.block-container {max-width: 1500px; padding-top: 2rem; padding-bottom: 3rem;}
+div[data-testid="stMetric"] {
+    border: 1px solid rgba(128,128,128,.22);
+    border-radius: 12px;
+    padding: 14px 16px;
+}
+div[data-testid="stExpander"] {border-radius: 12px;}
+.stButton > button {border-radius: 10px;}
+[data-testid="stMetricValue"] {font-variant-numeric: tabular-nums;}
+[data-testid="stDataFrame"] {border-radius: 12px; overflow: hidden;}
+h1, h2, h3 {letter-spacing: -0.02em;}
