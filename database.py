@@ -89,10 +89,11 @@ def get_audits(company_id,limit=500):
         rows=c.execute('SELECT timestamp,user_name AS user,role,company_id,action,target,details FROM audit_logs WHERE company_id=%s ORDER BY timestamp DESC LIMIT %s',(company_id,limit)).fetchall()
         out=[]
         for r in rows:
-            d=dict(r); d['timestamp']=d['timestamp'].isoformat(timespec='seconds'); out.append(d)
-        return out
+            d = dict(r)
+　　　　　　　d["timestamp"] = d["timestamp"].astimezone(ZoneInfo("Asia/Tokyo")).isoformat(timespec="seconds")
+　　　　　　　out.append(d)
 
-
+　　　　　　　return out
 # v5.1: tenant-scoped data access. Application code should prefer these functions.
 def list_users_by_company(company_id):
     with conn() as c:
