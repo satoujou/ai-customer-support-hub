@@ -1,4 +1,3 @@
-```
 import os
 import io
 import csv
@@ -94,3 +93,4 @@ div[data-testid="stExpander"] {border-radius: 12px;}
 [data-testid="stMetricValue"] {font-variant-numeric: tabular-nums;}
 [data-testid="stDataFrame"] {border-radius: 12px; overflow: hidden;}
 h1, h2, h3 {letter-spacing: -0.02em;}
+</style>
