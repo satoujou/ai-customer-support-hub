@@ -1429,3 +1429,157 @@ with tab7:
 # Global operational footer
 st.divider()
 st.caption(f"AI Customer Support Hub v{APP_VERSION} ｜ tenant={CURRENT_COMPANY_ID} ｜ user={CURRENT_USER}")
+
+st.markdown("""
+<style>
+
+/* =========================
+   1. 上部ログイン情報を控えめに
+   ========================= */
+
+/* ログイン情報の文字 */
+.top-user-info {
+    font-size: 0.90rem;
+    color: rgba(220, 228, 240, 0.68);
+    letter-spacing: 0.01em;
+    margin-bottom: 0.7rem;
+}
+
+/* =========================
+   2. タイトル周り
+   ========================= */
+
+h1 {
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.6rem !important;
+    font-size: 3.2rem !important;
+    line-height: 1.05 !important;
+}
+
+.app-subtitle {
+    color: rgba(220, 228, 240, 0.70);
+    font-size: 0.95rem;
+    margin-bottom: 1.4rem;
+}
+
+/* =========================
+   3. ナビゲーション
+   ========================= */
+
+button[data-baseweb="tab"] {
+    padding-left: 0.55rem !important;
+    padding-right: 0.55rem !important;
+    min-height: 2.6rem !important;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    color: rgba(235, 240, 248, 0.82) !important;
+}
+
+button[data-baseweb="tab"]:hover {
+    color: #FFFFFF !important;
+}
+
+button[data-baseweb="tab"][aria-selected="true"] {
+    color: #FF5A6A !important;
+}
+
+/* タブ下線 */
+div[data-baseweb="tab-highlight"] {
+    background-color: #FF5364 !important;
+    height: 2px !important;
+}
+
+/* =========================
+   4. 区切り線を控えめに
+   ========================= */
+
+hr {
+    border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* =========================
+   5. ダッシュボード見出し
+   ========================= */
+
+h2 {
+    font-size: 2rem !important;
+    margin-top: 1.25rem !important;
+    margin-bottom: 1rem !important;
+}
+
+/* =========================
+   6. KPIカードの高さ統一
+   ========================= */
+
+div[data-testid="stMetric"] {
+    min-height: 110px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 1rem 1.05rem !important;
+}
+
+/* ラベル */
+div[data-testid="stMetricLabel"] {
+    font-size: 0.92rem !important;
+    margin-bottom: 0.2rem !important;
+}
+
+/* 数値 */
+div[data-testid="stMetricValue"] {
+    font-size: 2.15rem !important;
+    line-height: 1.1 !important;
+}
+
+/* =========================
+   7. セクション間の余白調整
+   ========================= */
+
+.block-container > div {
+    gap: 0.65rem;
+}
+
+/* KPI見出し */
+.kpi-heading {
+    margin-top: 1.6rem;
+    margin-bottom: 0.85rem;
+}
+
+/* 優先対応 */
+.priority-heading {
+    margin-top: 1.7rem;
+    margin-bottom: 0.85rem;
+}
+
+/* =========================
+   8. 全体の横幅
+   ========================= */
+
+.block-container {
+    max-width: 1320px;
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
+/* =========================
+   9. ログアウトボタン
+   ========================= */
+
+.logout-wrap .stButton > button {
+    width: auto !important;
+    min-width: 115px;
+    padding: 0.65rem 1.3rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(255, 75, 92, 0.18);
+}
+
+/* =========================
+   10. 下部余白
+   ========================= */
+
+.block-container {
+    padding-bottom: 4rem !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
