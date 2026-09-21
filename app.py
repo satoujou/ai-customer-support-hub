@@ -508,7 +508,14 @@ with user_col:
 )
 
 st.title("AI Customer Support Hub")
-st.caption(f"{current_company_name()} ｜ AI問い合わせ管理 v{APP_VERSION} ｜ マルチテナント・AI対応支援")
+st.markdown(
+    f"""
+    <div class="app-subtitle">
+        {current_company_name} ｜ AI問い合わせ管理 v{APP_VERSION} ｜ マルチテナント・AI対応支援
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # 権限に応じて表示するメニューを切り替える
 _visible_tabs = [("tab1", "🏠 ホーム")]
