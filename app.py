@@ -498,13 +498,14 @@ if not is_platform_admin() and not current_company_is_active():
 
 user_col, logout_col = st.columns([5, 1])
 with user_col:
-    st.caption(f"ログイン中：{CURRENT_USER} ｜ 権限：{CURRENT_ROLE} ｜ 企業ID：{CURRENT_COMPANY_ID}")
-with logout_col:
-    if st.button("ログアウト", use_container_width=True, key="logout_button"):
-        write_audit_log("LOGOUT", details={"message": "ログアウト"})
-        st.session_state.pop("_audit_login_recorded", None)
-        logout()
-        st.rerun()
+    st.markdown(
+    f"""
+    <div class="top-user-info">
+        ログイン中：{CURRENT_USER} ｜ 権限：{CURRENT_ROLE} ｜ 企業ID：{CURRENT_COMPANY_ID}
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 st.title("AI Customer Support Hub")
 st.caption(f"{current_company_name()} ｜ AI問い合わせ管理 v{APP_VERSION} ｜ マルチテナント・AI対応支援")
