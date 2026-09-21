@@ -67,6 +67,150 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
+import streamlit as st
+
+st.set_page_config(page_title="AIカスタマーサポートハブ", layout="wide")
+
+def apply_custom_theme():
+    st.markdown("""
+    <style>
+    /* ===== 全体背景 ===== */
+    .stApp {
+        background:
+            radial-gradient(circle at 0% 0%, rgba(255, 60, 120, 0.22) 0%, rgba(255, 60, 120, 0.00) 22%),
+            radial-gradient(circle at 100% 100%, rgba(255, 60, 120, 0.20) 0%, rgba(255, 60, 120, 0.00) 22%),
+            linear-gradient(135deg, #050913 0%, #08101d 40%, #091425 100%);
+        color: #F5F7FB;
+    }
+
+    /* Streamlitのヘッダーを透明に */
+    header[data-testid="stHeader"] {
+        background: rgba(0, 0, 0, 0);
+    }
+
+    /* メインの余白 */
+    .block-container {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+        max-width: 1280px;
+    }
+
+    /* ===== 装飾ドット ===== */
+    .bg-dots-top-right, .bg-dots-bottom-left {
+        position: fixed;
+        width: 90px;
+        height: 90px;
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0.28;
+        background-image: radial-gradient(rgba(255,255,255,0.65) 1.4px, transparent 1.4px);
+        background-size: 18px 18px;
+    }
+
+    .bg-dots-top-right {
+        top: 36px;
+        right: 36px;
+    }
+
+    .bg-dots-bottom-left {
+        bottom: 36px;
+        left: 36px;
+    }
+
+    /* ===== 見出し ===== */
+    h1, h2, h3, h4, h5, h6 {
+        color: #FFFFFF !important;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+    }
+
+    p, label, span, div {
+        color: #E8EDF7;
+    }
+
+    /* ===== 入力欄 ===== */
+    div[data-baseweb="input"] > div,
+    div[data-baseweb="textarea"] > div,
+    div[data-baseweb="select"] > div {
+        background: rgba(255,255,255,0.06) !important;
+        border: 1px solid rgba(255,255,255,0.10) !important;
+        border-radius: 12px !important;
+        color: #FFFFFF !important;
+    }
+
+    input, textarea {
+        color: #FFFFFF !important;
+    }
+
+    /* ===== ボタン ===== */
+    .stButton > button {
+        width: 100%;
+        border-radius: 14px;
+        border: none;
+        color: white;
+        font-weight: 700;
+        padding: 0.8rem 1rem;
+        background: linear-gradient(90deg, #ff4b5c 0%, #ff5f6d 100%);
+        box-shadow: 0 8px 22px rgba(255, 75, 92, 0.25);
+    }
+
+    .stButton > button:hover {
+        background: linear-gradient(90deg, #ff5a69 0%, #ff7080 100%);
+        transform: translateY(-1px);
+    }
+
+    /* ===== metricカード ===== */
+    div[data-testid="stMetric"] {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 18px;
+        padding: 18px 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.20);
+        backdrop-filter: blur(6px);
+    }
+
+    div[data-testid="stMetricLabel"] {
+        color: #D9E2F2 !important;
+        font-weight: 600;
+    }
+
+    div[data-testid="stMetricValue"] {
+        color: #FFFFFF !important;
+        font-weight: 800;
+    }
+
+    /* ===== tabs ===== */
+    button[data-baseweb="tab"] {
+        color: #D5DCEC !important;
+        font-weight: 600;
+    }
+
+    button[data-baseweb="tab"][aria-selected="true"] {
+        color: #FF5B6B !important;
+        border-bottom: 2px solid #FF5B6B !important;
+    }
+
+    /* ===== expander ===== */
+    details {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        padding: 6px 10px;
+    }
+
+    /* ===== テーブルっぽいエリア ===== */
+    .stDataFrame, .stTable {
+        background: rgba(255,255,255,0.03);
+        border-radius: 16px;
+        overflow: hidden;
+    }
+    </style>
+
+    <div class="bg-dots-top-right"></div>
+    <div class="bg-dots-bottom-left"></div>
+    """, unsafe_allow_html=True)
+
+apply_custom_theme()
 # v5.0: authentication is PostgreSQL-backed
 initialize_auth()
 
